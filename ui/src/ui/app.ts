@@ -27,8 +27,9 @@ import type {
   SkillStatusReport,
   StatusSummary,
   NostrProfile,
-} from "./types.ts";
-import type { NostrProfileFormState } from "./views/channels.nostr-profile-form.ts";
+} from "./types";
+import type { NostrProfileFormState } from "./views/channels.nostr-profile-form";
+import type { ChannelTab } from "./views/channels.types";
 import {
   handleChannelConfigReload as handleChannelConfigReloadInternal,
   handleChannelConfigSave as handleChannelConfigSaveInternal,
@@ -191,6 +192,9 @@ export class OpenClawApp extends LitElement {
   @state() whatsappBusy = false;
   @state() nostrProfileFormState: NostrProfileFormState | null = null;
   @state() nostrProfileAccountId: string | null = null;
+  // Layered channels UI state
+  @state() channelsExpandedId: string | null = null;
+  @state() channelsActiveTab: ChannelTab = "status";
 
   @state() presenceLoading = false;
   @state() presenceEntries: PresenceEntry[] = [];
@@ -437,6 +441,25 @@ export class OpenClawApp extends LitElement {
 
   handleNostrProfileToggleAdvanced() {
     handleNostrProfileToggleAdvancedInternal(this);
+  }
+
+  // Layered channels UI handlers
+  handleChannelExpand(channelId: string) {
+    if (this.channelsExpandedId === channelId) {
+      // Toggle collapse if clicking the same channel
+      this.channelsExpandedId = null;
+    } else {
+      this.channelsExpandedId = channelId;
+      this.channelsActiveTab = "status"; // Reset to status tab
+    }
+  }
+
+  handleChannelCollapse() {
+    this.channelsExpandedId = null;
+  }
+
+  handleChannelTabChange(tab: ChannelTab) {
+    this.channelsActiveTab = tab;
   }
 
   async handleExecApprovalDecision(decision: "allow-once" | "allow-always" | "deny") {

@@ -693,6 +693,247 @@
 }
 
 /* ===========================================
+   Channels Page Layout - Layered channels UI
+   =========================================== */
+
+.channels-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ===========================================
+   Channel List - Layered channels UI
+   =========================================== */
+
+.channels-list {
+  display: grid;
+  gap: 0;
+}
+
+.channels-list .list-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  background: var(--card);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) ease,
+    border-color var(--duration-fast) ease;
+}
+
+.channels-list .list-item:first-child {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.channels-list .list-item:last-child {
+  border-bottom: 1px solid var(--border);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.channels-list .list-item:only-child {
+  border-radius: var(--radius-lg);
+}
+
+.channels-list .list-item:hover {
+  background: var(--bg-hover);
+}
+
+.channels-list .list-item-selected {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+/* When list-item is selected and followed by inline detail panel */
+.channels-list .list-item-selected + .channel-detail {
+  /* Detail panel connects to selected item above */
+}
+
+/* Selected item followed by detail: remove bottom radius */
+.channels-list .list-item-selected:has(+ .channel-detail) {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  border-bottom: none;
+}
+
+/* Inline channel-detail inside channels-list */
+.channels-list .channel-detail {
+  border-top: none;
+  border-radius: 0;
+  margin-bottom: 0;
+}
+
+/* If channel-detail is followed by more list items */
+.channels-list .channel-detail + .list-item {
+  border-radius: 0;
+}
+
+/* If channel-detail is the last child (no more items after) */
+.channels-list .channel-detail:last-child {
+  border-bottom: 1px solid var(--border);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* Adjust last list-item when detail is before it */
+.channels-list .channel-detail + .list-item:last-child {
+  border-bottom: 1px solid var(--border);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.channels-list .list-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.channels-list .list-activity {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.channels-list .list-chevron {
+  color: var(--muted);
+  transition: transform var(--duration-fast) ease;
+}
+
+.channels-list .list-item-selected .list-chevron {
+  transform: rotate(90deg);
+}
+
+/* Status dot variants for channel list */
+.statusDot.configured {
+  background: var(--accent);
+  box-shadow: none;
+  animation: none;
+}
+
+.statusDot.unconfigured {
+  background: var(--muted);
+  opacity: 0.5;
+  box-shadow: none;
+  animation: none;
+}
+
+.statusDot.error {
+  background: var(--danger);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* ===========================================
+   Channel Tabs - Mini-tab navigation
+   =========================================== */
+
+.channel-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.channel-tabs__tab {
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease;
+}
+
+.channel-tabs__tab:hover {
+  color: var(--text);
+}
+
+.channel-tabs__tab--active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.channel-tabs__tab--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.channel-tabs__tab--disabled:hover {
+  color: var(--muted);
+}
+
+/* ===========================================
+   Channel Detail - Expandable card
+   =========================================== */
+
+.channel-detail {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-top: none;
+  background: var(--card);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.channel-detail--expanded {
+  animation: channel-detail-enter 0.2s var(--ease-out) forwards;
+}
+
+.channel-detail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.channel-detail__title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-strong);
+}
+
+.channel-detail__close {
+  padding: 4px 8px;
+  font-size: 14px;
+}
+
+.channel-detail__tabs {
+  padding: 0 16px;
+}
+
+.channel-detail__content {
+  padding: 16px;
+}
+
+.channel-detail__placeholder {
+  padding: 24px;
+  text-align: center;
+}
+
+@keyframes channel-detail-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .channel-detail--expanded {
+    animation: none;
+  }
+}
+
+/* ===========================================
    Chips - Compact and punchy
    =========================================== */
 
