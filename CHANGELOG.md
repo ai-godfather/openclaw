@@ -158,6 +158,7 @@ Docs: https://docs.openclaw.ai
 
 ### Changes
 
+- Web UI: refactor channels page to layered progressive-disclosure UI with compact list view, expandable detail cards, and tabbed configuration (Status/Accounts/Config/Actions).
 - Docs: onboarding/install/i18n/exec-approvals/Control UI/exe.dev/cacheRetention updates + misc nav/typos. (#3050, #3461, #4064, #4675, #4729, #4763, #5003, #5402, #5446, #5474, #5663, #5689, #5694, #5967, #6270, #6300, #6311, #6416, #6487, #6550, #6789)
 - Telegram: use shared pairing store. (#6127) Thanks @obviyus.
 - Agents: add OpenRouter app attribution headers. Thanks @alexanderatallah.
