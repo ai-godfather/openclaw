@@ -1,11 +1,11 @@
 import { html, nothing } from "lit";
-import type { ChannelTab, ChannelsChannelData, ChannelsProps } from "./channels.types";
+import type { ChannelTab, ChannelsChannelData, ChannelsProps } from "./channels.types.ts";
 import {
   createDefaultChannelTabs,
   renderChannelTabs,
   type ChannelTabDef,
-} from "./channels-tabs";
-import { renderChannelConfigSection } from "./channels.config";
+} from "./channels-tabs.ts";
+import { renderChannelConfigSection } from "./channels.config.ts";
 
 /**
  * Props for the channel detail wrapper component.
@@ -69,7 +69,7 @@ export function renderChannelDetail(props: ChannelDetailProps) {
         ${renderChannelTabs({
           tabs,
           activeTab,
-          onTabChange,
+          onTabChange: (tabId) => onTabChange(tabId as ChannelTab),
         })}
       </div>
       <div class="channel-detail__content">
@@ -111,9 +111,7 @@ function renderTabContent(params: {
       return renderStatusContent ? renderStatusContent() : renderDefaultStatus();
 
     case "accounts":
-      return renderAccountsContent
-        ? renderAccountsContent()
-        : renderDefaultAccounts();
+      return renderAccountsContent ? renderAccountsContent() : renderDefaultAccounts();
 
     case "config":
       return renderChannelConfigSection({ channelId, props: channelsProps });

@@ -6,24 +6,22 @@ import type {
   DiscordStatus,
   GoogleChatStatus,
   IMessageStatus,
-  NostrProfile,
   NostrStatus,
   SignalStatus,
   SlackStatus,
   TelegramStatus,
   WhatsAppStatus,
-} from "../types";
+} from "../types.ts";
 import type {
   ChannelKey,
   ChannelListItem,
   ChannelsChannelData,
   ChannelsProps,
-} from "./channels.types";
-import { formatAgo } from "../format";
-import { renderChannelDetail } from "./channels-detail";
-import { renderChannelsList } from "./channels-list";
-import { renderChannelConfigSection } from "./channels.config";
-import { channelEnabled, formatDuration, getChannelAccountCount } from "./channels.shared";
+} from "./channels.types.ts";
+import { formatAgo } from "../format.ts";
+import { renderChannelDetail } from "./channels-detail.ts";
+import { renderChannelsList } from "./channels-list.ts";
+import { channelEnabled, formatDuration, getChannelAccountCount } from "./channels.shared.ts";
 
 export function renderChannels(props: ChannelsProps) {
   const channelOrder = resolveChannelOrder(props.snapshot);
@@ -40,7 +38,10 @@ export function renderChannels(props: ChannelsProps) {
       return a.order - b.order;
     });
 
-  const listItems = buildChannelListItems(props, orderedChannels.map((c) => c.key));
+  const listItems = buildChannelListItems(
+    props,
+    orderedChannels.map((c) => c.key),
+  );
 
   return html`
     <section class="channels-page">
@@ -49,7 +50,7 @@ export function renderChannels(props: ChannelsProps) {
         expandedChannelId: props.expandedChannelId,
         onChannelClick: props.onChannelExpand,
         onChannelCollapse: props.onChannelCollapse,
-        renderDetailContent: (channelId) => renderExpandedChannel(channelId as ChannelKey, props),
+        renderDetailContent: (channelId) => renderExpandedChannel(channelId, props),
       })}
     </section>
 
@@ -61,11 +62,13 @@ export function renderChannels(props: ChannelsProps) {
         </div>
         <div class="muted">${props.lastSuccessAt ? formatAgo(props.lastSuccessAt) : "n/a"}</div>
       </div>
-      ${props.lastError
-        ? html`<div class="callout danger" style="margin-top: 12px;">
+      ${
+        props.lastError
+          ? html`<div class="callout danger" style="margin-top: 12px;">
             ${props.lastError}
           </div>`
-        : nothing}
+          : nothing
+      }
       <pre class="code-block" style="margin-top: 12px;">
 ${props.snapshot ? JSON.stringify(props.snapshot, null, 2) : "No snapshot yet."}
       </pre>
@@ -90,7 +93,10 @@ function buildChannelListItems(props: ChannelsProps, orderedKeys: ChannelKey[]):
     // Get last activity from accounts
     let lastActivity: number | null = null;
     for (const account of accounts) {
-      if (account.lastInboundAt && (lastActivity === null || account.lastInboundAt > lastActivity)) {
+      if (
+        account.lastInboundAt &&
+        (lastActivity === null || account.lastInboundAt > lastActivity)
+      ) {
         lastActivity = account.lastInboundAt;
       }
     }
@@ -158,7 +164,11 @@ function renderExpandedChannel(channelId: ChannelKey, props: ChannelsProps) {
  * Renders the status content for a channel.
  * Delegates to channel-specific status renderers for channels with unique fields.
  */
-function renderChannelStatus(channelId: ChannelKey, props: ChannelsProps, data: ChannelsChannelData) {
+function renderChannelStatus(
+  channelId: ChannelKey,
+  props: ChannelsProps,
+  data: ChannelsChannelData,
+) {
   switch (channelId) {
     case "whatsapp":
       return renderWhatsAppStatus(data.whatsapp);
@@ -216,9 +226,11 @@ function renderWhatsAppStatus(whatsapp?: WhatsAppStatus) {
         <span>${whatsapp?.authAgeMs != null ? formatDuration(whatsapp.authAgeMs) : "n/a"}</span>
       </div>
     </div>
-    ${whatsapp?.lastError
-      ? html`<div class="callout danger" style="margin-top: 12px;">${whatsapp.lastError}</div>`
-      : nothing}
+    ${
+      whatsapp?.lastError
+        ? html`<div class="callout danger" style="margin-top: 12px;">${whatsapp.lastError}</div>`
+        : nothing
+    }
   `;
 }
 
@@ -249,14 +261,18 @@ function renderTelegramStatus(telegram?: TelegramStatus) {
         <span>${telegram?.lastProbeAt ? formatAgo(telegram.lastProbeAt) : "n/a"}</span>
       </div>
     </div>
-    ${telegram?.lastError
-      ? html`<div class="callout danger" style="margin-top: 12px;">${telegram.lastError}</div>`
-      : nothing}
-    ${telegram?.probe
-      ? html`<div class="callout ${telegram.probe.ok ? "info" : "danger"}" style="margin-top: 12px;">
+    ${
+      telegram?.lastError
+        ? html`<div class="callout danger" style="margin-top: 12px;">${telegram.lastError}</div>`
+        : nothing
+    }
+    ${
+      telegram?.probe
+        ? html`<div class="callout ${telegram.probe.ok ? "info" : "danger"}" style="margin-top: 12px;">
           Probe ${telegram.probe.ok ? "ok" : "failed"} · ${telegram.probe.status ?? ""} ${telegram.probe.error ?? ""}
         </div>`
-      : nothing}
+        : nothing
+    }
   `;
 }
 
@@ -283,14 +299,18 @@ function renderDiscordStatus(discord?: DiscordStatus | null) {
         <span>${discord?.lastProbeAt ? formatAgo(discord.lastProbeAt) : "n/a"}</span>
       </div>
     </div>
-    ${discord?.lastError
-      ? html`<div class="callout danger" style="margin-top: 12px;">${discord.lastError}</div>`
-      : nothing}
-    ${discord?.probe
-      ? html`<div class="callout ${discord.probe.ok ? "info" : "danger"}" style="margin-top: 12px;">
+    ${
+      discord?.lastError
+        ? html`<div class="callout danger" style="margin-top: 12px;">${discord.lastError}</div>`
+        : nothing
+    }
+    ${
+      discord?.probe
+        ? html`<div class="callout ${discord.probe.ok ? "info" : "danger"}" style="margin-top: 12px;">
           Probe ${discord.probe.ok ? "ok" : "failed"} · ${discord.probe.status ?? ""} ${discord.probe.error ?? ""}
         </div>`
-      : nothing}
+        : nothing
+    }
   `;
 }
 
@@ -308,14 +328,12 @@ function renderSlackStatus(slack?: SlackStatus | null) {
         <span class="label">Running</span>
         <span>${slack?.running ? "Yes" : "No"}</span>
       </div>
-      <div>
-        <span class="label">Connected</span>
-        <span>${slack?.connected ? "Yes" : "No"}</span>
-      </div>
     </div>
-    ${slack?.lastError
-      ? html`<div class="callout danger" style="margin-top: 12px;">${slack.lastError}</div>`
-      : nothing}
+    ${
+      slack?.lastError
+        ? html`<div class="callout danger" style="margin-top: 12px;">${slack.lastError}</div>`
+        : nothing
+    }
   `;
 }
 
@@ -333,14 +351,12 @@ function renderSignalStatus(signal?: SignalStatus | null) {
         <span class="label">Running</span>
         <span>${signal?.running ? "Yes" : "No"}</span>
       </div>
-      <div>
-        <span class="label">Connected</span>
-        <span>${signal?.connected ? "Yes" : "No"}</span>
-      </div>
     </div>
-    ${signal?.lastError
-      ? html`<div class="callout danger" style="margin-top: 12px;">${signal.lastError}</div>`
-      : nothing}
+    ${
+      signal?.lastError
+        ? html`<div class="callout danger" style="margin-top: 12px;">${signal.lastError}</div>`
+        : nothing
+    }
   `;
 }
 
@@ -358,14 +374,12 @@ function renderIMessageStatus(imessage?: IMessageStatus | null) {
         <span class="label">Running</span>
         <span>${imessage?.running ? "Yes" : "No"}</span>
       </div>
-      <div>
-        <span class="label">Connected</span>
-        <span>${imessage?.connected ? "Yes" : "No"}</span>
-      </div>
     </div>
-    ${imessage?.lastError
-      ? html`<div class="callout danger" style="margin-top: 12px;">${imessage.lastError}</div>`
-      : nothing}
+    ${
+      imessage?.lastError
+        ? html`<div class="callout danger" style="margin-top: 12px;">${imessage.lastError}</div>`
+        : nothing
+    }
   `;
 }
 
@@ -384,9 +398,11 @@ function renderGoogleChatStatus(googlechat?: GoogleChatStatus | null) {
         <span>${googlechat?.running ? "Yes" : "No"}</span>
       </div>
     </div>
-    ${googlechat?.lastError
-      ? html`<div class="callout danger" style="margin-top: 12px;">${googlechat.lastError}</div>`
-      : nothing}
+    ${
+      googlechat?.lastError
+        ? html`<div class="callout danger" style="margin-top: 12px;">${googlechat.lastError}</div>`
+        : nothing
+    }
   `;
 }
 
@@ -404,21 +420,23 @@ function renderNostrStatus(nostr?: NostrStatus | null) {
         <span class="label">Running</span>
         <span>${nostr?.running ? "Yes" : "No"}</span>
       </div>
-      <div>
-        <span class="label">Connected</span>
-        <span>${nostr?.connected ? "Yes" : "No"}</span>
-      </div>
     </div>
-    ${nostr?.lastError
-      ? html`<div class="callout danger" style="margin-top: 12px;">${nostr.lastError}</div>`
-      : nothing}
+    ${
+      nostr?.lastError
+        ? html`<div class="callout danger" style="margin-top: 12px;">${nostr.lastError}</div>`
+        : nothing
+    }
   `;
 }
 
 /**
  * Generic status for unknown or extension channels.
  */
-function renderGenericStatus(channelId: ChannelKey, props: ChannelsProps, data: ChannelsChannelData) {
+function renderGenericStatus(
+  channelId: ChannelKey,
+  props: ChannelsProps,
+  data: ChannelsChannelData,
+) {
   const status = props.snapshot?.channels?.[channelId] as Record<string, unknown> | undefined;
   const configured = typeof status?.configured === "boolean" ? status.configured : undefined;
   const running = typeof status?.running === "boolean" ? status.running : undefined;
@@ -446,9 +464,11 @@ function renderGenericStatus(channelId: ChannelKey, props: ChannelsProps, data: 
         <span>${lastInbound ? formatAgo(lastInbound) : "n/a"}</span>
       </div>
     </div>
-    ${lastError
-      ? html`<div class="callout danger" style="margin-top: 12px;">${lastError}</div>`
-      : nothing}
+    ${
+      lastError
+        ? html`<div class="callout danger" style="margin-top: 12px;">${lastError}</div>`
+        : nothing
+    }
   `;
 }
 
@@ -477,7 +497,11 @@ function renderChannelAccounts(channelId: ChannelKey, data: ChannelsChannelData)
  * Renders the actions content for a channel.
  * Delegates to channel-specific action renderers for special channels.
  */
-function renderChannelActions(channelId: ChannelKey, props: ChannelsProps, data: ChannelsChannelData) {
+function renderChannelActions(
+  channelId: ChannelKey,
+  props: ChannelsProps,
+  data: ChannelsChannelData,
+) {
   switch (channelId) {
     case "whatsapp":
       return renderWhatsAppActions(props, data.whatsapp);
@@ -511,8 +535,9 @@ function renderWhatsAppActions(props: ChannelsProps, whatsapp?: WhatsAppStatus) 
       >
         ${showQr ? "Refresh QR" : "Show QR Code"}
       </button>
-      ${whatsapp?.linked
-        ? html`
+      ${
+        whatsapp?.linked
+          ? html`
             <button
               class="btn btn-danger"
               ?disabled=${props.whatsappBusy}
@@ -521,18 +546,23 @@ function renderWhatsAppActions(props: ChannelsProps, whatsapp?: WhatsAppStatus) 
               Logout
             </button>
           `
-        : nothing}
+          : nothing
+      }
     </div>
-    ${showQr
-      ? html`
+    ${
+      showQr
+        ? html`
           <div class="whatsapp-qr">
             <img src=${props.whatsappQrDataUrl!} alt="WhatsApp QR Code" />
           </div>
         `
-      : nothing}
-    ${props.whatsappMessage
-      ? html`<div class="callout info">${props.whatsappMessage}</div>`
-      : nothing}
+        : nothing
+    }
+    ${
+      props.whatsappMessage
+        ? html`<div class="callout info">${props.whatsappMessage}</div>`
+        : nothing
+    }
   `;
 }
 
@@ -583,15 +613,25 @@ function hasRecentActivity(account: ChannelAccountSnapshot): boolean {
 }
 
 function deriveRunningStatus(account: ChannelAccountSnapshot): "Yes" | "No" | "Active" {
-  if (account.running) return "Yes";
-  if (hasRecentActivity(account)) return "Active";
+  if (account.running) {
+    return "Yes";
+  }
+  if (hasRecentActivity(account)) {
+    return "Active";
+  }
   return "No";
 }
 
 function deriveConnectedStatus(account: ChannelAccountSnapshot): "Yes" | "No" | "Active" | "n/a" {
-  if (account.connected === true) return "Yes";
-  if (account.connected === false) return "No";
-  if (hasRecentActivity(account)) return "Active";
+  if (account.connected === true) {
+    return "Yes";
+  }
+  if (account.connected === false) {
+    return "No";
+  }
+  if (hasRecentActivity(account)) {
+    return "Active";
+  }
   return "n/a";
 }
 
@@ -622,15 +662,16 @@ function renderGenericAccount(account: ChannelAccountSnapshot) {
           <span class="label">Last inbound</span>
           <span>${account.lastInboundAt ? formatAgo(account.lastInboundAt) : "n/a"}</span>
         </div>
-        ${account.lastError
-          ? html`
+        ${
+          account.lastError
+            ? html`
               <div class="account-card-error">
                 ${account.lastError}
               </div>
             `
-          : nothing}
+            : nothing
+        }
       </div>
     </div>
   `;
 }
-

@@ -27,9 +27,9 @@ import type {
   SkillStatusReport,
   StatusSummary,
   NostrProfile,
-} from "./types";
-import type { NostrProfileFormState } from "./views/channels.nostr-profile-form";
-import type { ChannelTab } from "./views/channels.types";
+} from "./types.ts";
+import type { NostrProfileFormState } from "./views/channels.nostr-profile-form.ts";
+import type { ChannelTab } from "./views/channels.types.ts";
 import {
   handleChannelConfigReload as handleChannelConfigReloadInternal,
   handleChannelConfigSave as handleChannelConfigSaveInternal,

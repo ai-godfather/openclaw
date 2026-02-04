@@ -1,5 +1,5 @@
 import { html, nothing } from "lit";
-import { formatAgo } from "../format";
+import { formatAgo } from "../format.ts";
 
 /**
  * Props for the channel list component.
@@ -30,7 +30,8 @@ export type ChannelsListProps = {
  * Supports keyboard navigation: Arrow Up/Down, Enter/Space, Escape.
  */
 export function renderChannelsList(props: ChannelsListProps) {
-  const { channels, expandedChannelId, onChannelClick, onChannelCollapse, renderDetailContent } = props;
+  const { channels, expandedChannelId, onChannelClick, onChannelCollapse, renderDetailContent } =
+    props;
 
   /**
    * Handles keyboard navigation for the channel list.
@@ -90,9 +91,7 @@ export function renderChannelsList(props: ChannelsListProps) {
         const isExpanded = expandedChannelId === channel.id;
         const statusClass = getStatusClass(channel);
         const statusSummary = getStatusSummary(channel);
-        const lastActivityText = channel.lastActivity
-          ? formatAgo(channel.lastActivity)
-          : "n/a";
+        const lastActivityText = channel.lastActivity ? formatAgo(channel.lastActivity) : "n/a";
 
         return html`
           <div
@@ -127,9 +126,15 @@ export function renderChannelsList(props: ChannelsListProps) {
  * Determines the CSS class for the status dot based on channel state.
  */
 function getStatusClass(channel: ChannelListItem): string {
-  if (channel.hasError) return "error";
-  if (channel.connected || channel.running) return "ok";
-  if (channel.configured) return "configured";
+  if (channel.hasError) {
+    return "error";
+  }
+  if (channel.connected || channel.running) {
+    return "ok";
+  }
+  if (channel.configured) {
+    return "configured";
+  }
   return "unconfigured";
 }
 

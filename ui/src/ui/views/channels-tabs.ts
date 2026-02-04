@@ -1,4 +1,4 @@
-import { html, nothing } from "lit";
+import { html } from "lit";
 
 /**
  * Definition for a single tab in the channel detail view.
